@@ -77,8 +77,14 @@ public class Painter : MonoBehaviour
         {
             if (this.UseMouse == false)
             {
-                touchPoint = this.TranslatePointFromCameraToTexture(this.pickupPen.transform.position);
-                this.PenMove(touchPoint);
+				Ray touchRay = new Ray (this.pickupPen.transform.position, this.pickupPen.transform.forward);
+				RaycastHit hit;
+				if (Physics.Raycast (touchRay, out hit, 100)) {
+					if (hit.collider.gameObject == this.gameObject) {
+						touchPoint = this.TranslatePointFromCameraToTexture(hit.point);
+						this.PenMove(touchPoint);
+					}
+				}
             }
             else
             {
