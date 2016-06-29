@@ -43,6 +43,8 @@ public class Painter : MonoBehaviour
     public Texture2D TextureCanvas;
     public bool NeedAdjust = false;
     public bool UseMouse = false;
+
+   
     #endregion
 
     #region members
@@ -77,14 +79,19 @@ public class Painter : MonoBehaviour
         {
             if (this.UseMouse == false)
             {
-				Ray touchRay = new Ray (this.pickupPen.transform.position, this.pickupPen.transform.forward);
-				RaycastHit hit;
-				if (Physics.Raycast (touchRay, out hit, 100)) {
-					if (hit.collider.gameObject == this.gameObject) {
-						touchPoint = this.TranslatePointFromCameraToTexture(hit.point);
-						this.PenMove(touchPoint);
-					}
-				}
+                Transform penHead = this.pickupPen.transform.GetChild(0);
+                touchPoint = this.TranslatePointFromCameraToTexture(penHead.position);
+                this.PenMove(touchPoint);
+
+                //Follow code is low performance
+                //Ray touchRay = new Ray (this.pickupPen.transform.position, this.pickupPen.transform.forward*-1);
+                //RaycastHit hit;
+                //if (Physics.Raycast (touchRay, out hit, 100)) {
+                //	if (hit.collider.gameObject == this.gameObject) {
+                //		touchPoint = this.TranslatePointFromCameraToTexture(hit.point);
+                //		this.PenMove(touchPoint);
+                //	}
+                //}
             }
             else
             {
@@ -113,7 +120,9 @@ public class Painter : MonoBehaviour
             this.pickupPen = collider.gameObject;
             this.CurrentColor = pen.PenColor;
 
-            Vector3 touchPoint = this.TranslatePointFromCameraToTexture(this.pickupPen.transform.position);
+            Transform penHead = this.pickupPen.transform.GetChild(0);
+            Vector3 touchPoint = this.TranslatePointFromCameraToTexture(penHead.position);
+           
             this.dragPrePoint = touchPoint;
             this.dragPoint = touchPoint;
 
