@@ -43,6 +43,7 @@ public class Painter : MonoBehaviour
     public Texture2D TextureCanvas;
     public bool NeedAdjust = false;
     public bool UseMouse = false;
+	public Vector3 Offset = Vector3.zero;
 
 	public int SyncUpSize = 128;
    
@@ -205,7 +206,8 @@ public class Painter : MonoBehaviour
 
     Vector3 TranslatePointFromCameraToTexture(Vector3 source)
     {
-        Vector3 relativeToObj = source - this.canvasBound.Center;
+		Vector3 removeOffset = new Vector3 (source.x - this.Offset.x, source.y - this.Offset.y, source.z);
+		Vector3 relativeToObj = removeOffset - this.canvasBound.Center;
         Vector3 relativeToTexture = new Vector3(relativeToObj.x * -1, relativeToObj.y * -1);
         Vector3 relativeToCorner = relativeToTexture - this.canvasBound.LTCorner;
         float left = (relativeToCorner.x * this.textureWidth / this.canvasBound.Width);
