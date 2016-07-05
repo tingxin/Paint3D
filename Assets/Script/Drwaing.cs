@@ -8,7 +8,6 @@ namespace DrawingTool
     {
         public static void DrawLine(Vector3 from, Vector3 to, float brushWidth, Color brushColor, float hardness, Texture2D texture)
         {
-            float width = brushWidth * 2;
             float extent = brushWidth;
 
             int stX = GetInt(Mathf.Clamp(Mathf.Min(from.x, to.x) - extent, 0, texture.width));
@@ -20,7 +19,6 @@ namespace DrawingTool
             int lengthX = (endX - stX);
             int lengthY = (endY - stY);
 
-            float sqrWidth = brushWidth * brushWidth;
             float sqrWidthNext = (brushWidth + 1) * (brushWidth + 1);
 
             Color[] pixels = texture.GetPixels(GetInt(stX), GetInt(stY), GetInt(lengthX), GetInt(lengthY), 0);
@@ -59,6 +57,26 @@ namespace DrawingTool
             texture.SetPixels((int)start.x, (int)start.y, (int)lengthX, (int)lengthY, pixels, 0);
             texture.Apply();
         }
+
+		public static Color[] GetPixelsInArea(int x, int y, int lengthX, int lengthY, Texture2D texture){
+
+			Color[] pixels = texture.GetPixels(x, y, lengthX, lengthY, 0);
+			return pixels;
+		}
+
+		public static bool SetPixelsInArea(int x, int y, int lengthX, int lengthY, Texture2D texture, Color[] pixels){
+
+			try
+			{
+				texture.SetPixels(x, y, lengthX, lengthY, pixels, 0);
+				texture.Apply();
+				return true;
+			}
+			catch(Exception ex){
+				Debug.LogWarning (ex.Message);
+				return false;
+			}
+		}
 
         static Vector3 NearestPontStrict(Vector3 lineStart, Vector3 lineEnd, Vector3 point)
         {

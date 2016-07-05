@@ -44,6 +44,7 @@ public class Painter : MonoBehaviour
     public bool NeedAdjust = false;
     public bool UseMouse = false;
 
+	public int SyncUpSize = 128;
    
     #endregion
 
@@ -55,9 +56,9 @@ public class Painter : MonoBehaviour
     private float textureWidth;
     private float textureHeight;
 
-    private ArrayList currentLline = new ArrayList();
-
     private GameObject pickupPen = null;
+
+	private TXQueue<DrawingSyncUpData> messageQueue = new TXQueue<DrawingSyncUpData> (15);
 
     #endregion
 
@@ -73,41 +74,32 @@ public class Painter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+		this.UpdateRemote ();
+
         Vector3 touchPoint = Vector3.zero;
+		if (this.UseMouse == false)
+		{
+			if (this.pickupPen != null)
+			{
+				Transform penHead = this.pickupPen.transform.GetChild(0);
+				touchPoint = this.TranslatePointFromCameraToTexture(penHead.position);
+				this.PenMove(touchPoint);
+			}
+		}
+		else
+		{
+			Ray touchRay = this.PaintCamera.ScreenPointToRay(Input.mousePosition);
+			RaycastHit hit;
 
-        if (this.pickupPen != null)
-        {
-            if (this.UseMouse == false)
-            {
-                Transform penHead = this.pickupPen.transform.GetChild(0);
-                touchPoint = this.TranslatePointFromCameraToTexture(penHead.position);
-                this.PenMove(touchPoint);
-
-                //Follow code is low performance
-                //Ray touchRay = new Ray (this.pickupPen.transform.position, this.pickupPen.transform.forward*-1);
-                //RaycastHit hit;
-                //if (Physics.Raycast (touchRay, out hit, 100)) {
-                //	if (hit.collider.gameObject == this.gameObject) {
-                //		touchPoint = this.TranslatePointFromCameraToTexture(hit.point);
-                //		this.PenMove(touchPoint);
-                //	}
-                //}
-            }
-            else
-            {
-                Ray touchRay = this.PaintCamera.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                if (Physics.Raycast(touchRay, out hit, 100))
-                {
-                    if (hit.collider.gameObject == this.gameObject)
-                    {
-                        touchPoint = this.TranslatePointFromCameraToTexture(hit.point);
-                        this.PenMove(touchPoint);
-                    }
-                }
-            }
-        }
+			if (Physics.Raycast(touchRay, out hit, 100))
+			{
+				if (hit.collider.gameObject == this.gameObject)
+				{
+					touchPoint = this.TranslatePointFromCameraToTexture(hit.point);
+					this.PenMove(touchPoint);
+				}
+			}
+		}
     }
 
 
@@ -148,12 +140,6 @@ public class Painter : MonoBehaviour
         }
     }
 
-    void PenBegin(Vector3 touchPoint)
-    {
-        this.dragPrePoint = touchPoint;
-        this.dragPoint = touchPoint;
-    }
-
     void PenMove(Vector3 touchPoint)
     {
         this.dragPoint = touchPoint;
@@ -172,22 +158,43 @@ public class Painter : MonoBehaviour
                 Drwaing.DrawLine(this.dragPoint, this.dragPrePoint, EraserSetting.Width, Color.white, EraserSetting.Hardness, this.TextureCanvas);
             }
             this.dragPrePoint = this.dragPoint;
-        }
 
-
-    }
-
-    void PenEnd(Vector3 touchPoint)
-    {
-        this.dragPrePoint = Vector3.zero;
-        this.dragPoint = Vector3.zero;
-
-        if (this.NeedAdjust)
-        {
-            this.AdjustLastLine();
+			this.PrepareToSync (this.dragPoint);
         }
     }
 
+	void PrepareToSync(Vector3 currentPosition){
+		int[] pos = this.GetUpdatedArea (currentPosition);
+		Color[] pixels = Drwaing.GetPixelsInArea (pos [0], pos [1], pos [2], pos [3], this.TextureCanvas);
+
+		DrawingSyncUpData data = new DrawingSyncUpData ();
+		data.x = pos [0];
+		data.y = pos [1];
+		data.lengthX = pos [2];
+		data.lengthY = pos [3];
+
+		data.pixels = pixels;
+		//Todo: sync up data with remote
+	}
+
+	void UpdateRemote(){
+	
+		if (this.messageQueue.Has) {
+			DrawingSyncUpData data = this.messageQueue.Get ();
+
+			Drwaing.SetPixelsInArea (data.x, data.y, data.lengthX, data.lengthY, this.TextureCanvas, data.pixels);
+		}
+	}
+
+	int[] GetUpdatedArea(Vector3 touchPoint){
+		int startX = this.GetInt (touchPoint.x - this.SyncUpSize / 2);
+		int startY = this.GetInt(touchPoint.y- this.SyncUpSize / 2);
+		int length = this.SyncUpSize + 1;
+
+		int[] result = { startX, startY, length, length };
+		return result;
+	}
+		
     void AdjustLastLine()
     {
         //TODO: Add Adjust line feature here
@@ -198,11 +205,6 @@ public class Painter : MonoBehaviour
 
     Vector3 TranslatePointFromCameraToTexture(Vector3 source)
     {
-        //Here is temp code for translate
-        //If we use HTC Vive controller or other input device
-        //we can get the real touch point map to canvas
-
-
         Vector3 relativeToObj = source - this.canvasBound.Center;
         Vector3 relativeToTexture = new Vector3(relativeToObj.x * -1, relativeToObj.y * -1);
         Vector3 relativeToCorner = relativeToTexture - this.canvasBound.LTCorner;
@@ -216,6 +218,11 @@ public class Painter : MonoBehaviour
     {
         return Mathf.Sqrt(diff.x * diff.x + diff.y * diff.y);
     }
+
+	int GetInt(float number)
+	{
+		return (int)Mathf.Round(number);
+	}
 }
 
 public enum Tool

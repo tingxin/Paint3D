@@ -1,0 +1,17 @@
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Assembly-CSharp-firstpass.dll.mdb
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Assembly-CSharp-firstpass.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/obj/Debug/Assembly-CSharp-firstpass.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/obj/Debug/Assembly-CSharp-firstpass.dll.mdb
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/UnityEngine.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/UnityEditor.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Mono.Cecil.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Unity.DataContract.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/tingxxu/WorkSpace/Unity/Paint3D/Temp/bin/Debug/Mono.Cecil.Mdb.dll
